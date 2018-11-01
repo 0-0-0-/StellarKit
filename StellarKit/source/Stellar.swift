@@ -74,6 +74,7 @@ public enum Stellar {
                                destination: String,
                                amount: Int64,
                                asset: Asset = .ASSET_TYPE_NATIVE,
+                               fee: UInt32? = nil,
                                memo: Memo = .MEMO_NONE,
                                node: Node) -> Promise<String> {
         return balance(account: destination, asset: asset, node: node)
@@ -84,6 +85,7 @@ public enum Stellar {
                                            source: source)
                 
                 return TxBuilder(source: source, node: node)
+                    .set(fee: fee)
                     .set(memo: memo)
                     .add(operation: op)
                     .tx()
@@ -271,6 +273,20 @@ public enum Stellar {
         return accountDetails(account: account, node: node)
             .then { accountDetails in
                 return Promise<UInt64>().signal(accountDetails.seqNum + 1)
+        }
+    }
+
+    public func networkParameters(node: Node) -> Promise<NetworkParameters> {
+        let url = Endpoint(url: node.baseURL).ledgers().order(.descending).limit(1).url
+
+        return issue(request: URLRequest(url: url))
+            .then { data in
+                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data) {
+                    throw StellarError.unknownError(horizonError)
+                }
+
+                return try Promise<NetworkParameters>(JSONDecoder().decode(NetworkParameters.self,
+                                                                           from: data))
         }
     }
 

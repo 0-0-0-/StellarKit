@@ -28,6 +28,15 @@ struct TransactionsEndpoint: EndpointProtocol {
     let url: URL
 }
 
+struct LedgersEndpoint: EndpointProtocol {
+    let url: URL
+
+    enum Order: String {
+        case ascending = "asc"
+        case descending = "desc"
+    }
+}
+
 struct CursorEndpoint: EndpointProtocol {
     let url: URL
 }
@@ -47,6 +56,10 @@ extension Endpoint {
 
     func transactions() -> TransactionsEndpoint {
         return StellarKit.transactions(url: url)
+    }
+
+    func ledgers() -> LedgersEndpoint {
+        return StellarKit.ledgders(url: url)
     }
 }
 
@@ -72,6 +85,18 @@ extension TransactionsEndpoint {
     }
 }
 
+extension LedgersEndpoint {
+    func order(_ order: Order) -> LedgersEndpoint {
+        let p = parameterFixup(url: url, parameter: "?order=\(order.rawValue)")
+        return LedgersEndpoint(url: url.appendingPathComponent(p))
+    }
+
+    func limit(_ limit: Int) -> LedgersEndpoint {
+        let p = parameterFixup(url: url, parameter: "?limit=\(limit)")
+        return LedgersEndpoint(url: url.appendingPathComponent(p))
+    }
+}
+
 //MARK: -
 
 private func payments(url: URL) -> PaymentsEndpoint {
@@ -82,10 +107,22 @@ private func transactions(url: URL) -> TransactionsEndpoint {
     return TransactionsEndpoint(url: url.appendingPathComponent("transactions"))
 }
 
+private func ledgders(url: URL) -> LedgersEndpoint {
+    return LedgersEndpoint(url: url.appendingPathComponent("ledgers"))
+}
+
 private func cursor(url: URL, cursor: String?) -> CursorEndpoint {
     if let cursor = cursor {
         return CursorEndpoint(url: URL(string: url.absoluteString + "?cursor=\(cursor)")!)
     }
 
     return CursorEndpoint(url: url)
+}
+
+private func parameterFixup(url: URL, parameter: String) -> String {
+    if url.absoluteString.contains("?") && parameter.first == "?" {
+        return String(parameter.suffix(parameter.count - 1))
+    }
+
+    return parameter
 }

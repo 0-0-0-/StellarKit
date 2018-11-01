@@ -31,7 +31,7 @@ public final class TxBuilder {
         return self
     }
 
-    public func set(fee: UInt32) -> TxBuilder {
+    public func set(fee: UInt32?) -> TxBuilder {
         self.fee = fee
 
         return self
