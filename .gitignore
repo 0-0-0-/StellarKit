@@ -2,3 +2,6 @@
 /.build
 xcuserdata
 Package.resolved
+
+StellarKit.xcodeproj/project.xcworkspace/xcshareddata/
+StellarKit.xcodeproj/xcuserdata
