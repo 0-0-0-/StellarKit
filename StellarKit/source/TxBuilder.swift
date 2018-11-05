@@ -87,6 +87,7 @@ public final class TxBuilder {
                                          seqNum: $0,
                                          timeBounds: nil,
                                          memo: self.memo ?? .MEMO_NONE,
+                                         fee: self.fee,
                                          operations: self.operations)
 
                     p.signal(tx)

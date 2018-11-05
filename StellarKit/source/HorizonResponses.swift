@@ -30,7 +30,7 @@ public struct NetworkParameters: Decodable {
     private let _embedded: [String: [LedgerResponse]]
 
     public var baseFee: Int {
-        return _embedded["records"]!.first!.base_fee
+        return _embedded["records"]!.first!.base_fee_in_stroops
     }
 }
 
@@ -109,8 +109,8 @@ struct LedgerResponse: Decodable {
     let _links: Links
     let id: String
     let hash: String
-    let base_fee: Int
-    let base_reserve: Double
+    let base_fee_in_stroops: Int
+    let base_reserve_in_stroops: Double
     let max_tx_set_size: Int
 }
 
